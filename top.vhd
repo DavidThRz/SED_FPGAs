@@ -3,19 +3,19 @@ use IEEE.std_logic_1164.all;
 
 entity top is
     PORT (-- code : IN std_logic_vector(3 DOWNTO 0);
-        RESET      : in  std_logic;		--Boton para reset LOW LVL
+        RESET      : in  std_logic;				--Boton para reset LOW LVL
         
-        B_LARGO    : in  std_logic;		--Boton cafe largo
-        B_CORTO    : in  std_logic;		--Boton cafe corto
+        B_LARGO    : in  std_logic;				--Boton cafe largo
+        B_CORTO    : in  std_logic;				--Boton cafe corto
         
-        S_ON	   : in  std_logic;		--Swicth para encendido
-        S_LECHE	   : in  std_logic;		--Swicht leche
-        S_AZUCAR   : in  std_logic;		--Swicht azucar
+        S_ON	   : in  std_logic;				--Swicth para encendido
+        S_LECHE	   : in  std_logic;				--Swicht leche
+        S_AZUCAR   : in  std_logic;				--Swicht azucar
         
-        CLK         : in  std_logic;		--Señal del reloj
-        LIGHT       : out std_logic_vector(0 TO 3); --Leds
-        disp_num 	: out std_logic_vector(6 downto 0);
-        disp_selec  : out std_logic_vector(7 downto 0)
+        CLK         : in  std_logic;				--SeÃ±al del reloj
+        LIGHT       : out std_logic_vector(0 TO 3); 		--Leds
+        disp_num 	: out std_logic_vector(6 downto 0);	--numero a mostrar en el instante
+        disp_selec  : out std_logic_vector(7 downto 0)		--display de cifras a activar
     );
 end top;
 
@@ -26,7 +26,7 @@ architecture Behavioral of top is
     signal boton_edge_corto: std_logic;
     signal boton_sinc_largo: std_logic;
     signal boton_edge_largo: std_logic;
-	signal segment_unid:std_logic_vector(6 downto 0);
+    signal segment_unid:std_logic_vector(6 downto 0);
     signal segment_dec: std_logic_vector(6 downto 0);
     signal CLK_DIV    : std_logic;
    
@@ -54,7 +54,7 @@ architecture Behavioral of top is
         S_ON	   : in  std_logic;		
         S_LECHE	   : in  std_logic;		--Swicht leche
         S_AZUCAR   : in  std_logic;		--Swicht azucar
-       	CLK        : in  std_logic;		--Señal del reloj
+       	CLK        : in  std_logic;		--SeÃ±al del reloj
         LIGHT      : out std_logic_vector(0 TO 3); --Leds
         segment_u  : out std_logic_vector(6 downto 0);
         segment_d  : out std_logic_vector(6 downto 0)
@@ -130,4 +130,4 @@ architecture Behavioral of top is
             CLK_DIV => CLK_DIV
         );
                 
- end behavioral;
+ end Behavioral;
