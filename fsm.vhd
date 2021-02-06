@@ -4,19 +4,19 @@ use IEEE.std_logic_1164.all;
 
 entity fsm is
     port (
-        RESET      : in  std_logic;		--Boton para reset LOW LVL
+        RESET      : in  std_logic;			--Boton para reset LOW LVL
         
-        B_LARGO    : in  std_logic;		--Boton cafe largo
-        B_CORTO    : in  std_logic;		--Boton cafe corto
+        B_LARGO    : in  std_logic;			--Boton cafe largo
+        B_CORTO    : in  std_logic;			--Boton cafe corto
         
-        S_ON	   : in  std_logic;		--Swicth para encendido
-        S_LECHE	   : in  std_logic;		--Swicht leche
-        S_AZUCAR   : in  std_logic;		--Swicht azucar
+        S_ON	   : in  std_logic;			--Swicth para encendido
+        S_LECHE	   : in  std_logic;			--Swicht leche
+        S_AZUCAR   : in  std_logic;			--Swicht azucar
         
-        CLK        : in  std_logic;		--Señal del reloj
-        LIGHT      : out std_logic_vector(0 TO 3); --Leds
-        segment_u  : out std_logic_vector(6 downto 0);
-        segment_d  : out std_logic_vector(6 downto 0)
+        CLK        : in  std_logic;			--SeÃ±al del reloj
+        LIGHT      : out std_logic_vector(0 TO 3); 	--Leds
+        segment_u  : out std_logic_vector(6 downto 0);	--segmento de led de unidad
+        segment_d  : out std_logic_vector(6 downto 0)	--segmento de led de decena
     );
 end fsm;
 
@@ -32,69 +32,13 @@ architecture behavioral of fsm is
     type STATES is (S0, S1, S2, S3);   
     signal current_state	: STATES;		--Estado actual
     signal next_state		: STATES;		--Estado siguiente
-    signal con_leche   	 	: std_logic;    --0 sin leche 1 con leche
-    signal con_azucar   	: std_logic;	--0 sin azucar 1 con leche
-    
-    --Flags para tipos de cafe
---    signal flag_largo : std_logic;
---    signal flag_corto : std_logic;
-    
-    --variables para divisor
-    --signal clk_divisor      : std_logic;    --1 segundo de ciclo
-	--signal aux              : std_logic:='0'; 
-    --signal count            : integer:=0;
-    
-    --contador
-    signal contador		    : integer:=0;
-    signal flag_fin         :std_logic;
+    signal con_leche   	 	: std_logic;    	--0 sin leche 1 con leche
+    signal con_azucar   	: std_logic;		--0 sin azucar 1 con leche
+
+    signal contador		: integer:=0;		--contador de milisegundos
+
 begin
 
-
-	--divisor de frecuencia
-    
-  --  process(CLK,) 
-	--begin
-    	
-    	--if(RESET = '1') the
-    	
-    --	if(CLK'event and CLK = '1') then
-    --    	if(current_state = S2 or current_state = S3) then
-			
-	--			count <=count+1;
-	--			if(count = 50000 - 1 ) then   -----Poner 50 - 1
-	--			aux <= not aux;
-		--			count <=0;
-
-	--			end if;
-      --      elsif((current_state=S2 or current_state=S3) and current_state'event) then
-      --  		count<= 0;
-     --       	aux<= '0';
-      --    		clk_divisor<='0';
-        		
-	--		end if;
-     ---   clk_divisor<=aux;
-   --     end if;
-	--end process;
-    
-	--//-------CONTADOR DE LOS DOS TIPOS DE CAFE---------------
- --   contador_process: process (next_state,clk_divisor,flag_corto,flag_largo)
- --   begin
- --   	if(next_state = S1) then
- --       	contador <= 0;
- --       end if;
- --       if( flag_corto'event and flag_corto ='1') then
- --       	contador<=10;
- --       elsif( flag_largo'event and flag_largo ='1') then
- --       	contador<=20;
- --       end if;
- --   	if  (clk_divisor'event and clk_divisor ='0') then
- --      	if (current_state = S2 or current_state = S3) then
- --           	
- --           	contador<=contador-1;
- --               
- --           end if;
- --       end if;    	
- --   end process;
 
 
 	--//-------FUNCIONAMIENTO DEL RESET EN EL SISTEMA----------
@@ -102,7 +46,7 @@ begin
     begin
         if (RESET = '0') then				 --Reset por nivel bajo
             current_state <= S1;
-        elsif (CLK'event and CLK = '1') then
+        elsif (CLK'event and CLK = '1') then		--cambio de estado
             current_state <= next_state;
         end if;          
     end process;
@@ -111,24 +55,21 @@ begin
     next_state_process : process (B_CORTO,B_LARGO,S_ON,current_state,CLK)
     begin  
         
-        next_state <= current_state;  	 --Iguala el estado siguiente al actual
+        next_state <= current_state;  	--Iguala el estado siguiente al actual
         if(  current_state=S0) then
                 if S_ON = '1' then
-                    next_state <= S1;
+                    next_state <= S1;	--del apagado a reposo
                 end if; 
                 
         elsif current_state=S1 then
             	
-            	contador<=3;
- --               flag_largo<='0';
- --               flag_corto<='0';
-           	    --Implementacion para añadir leche
+           	--Implementacion para aÃ±adir leche
             	if S_LECHE = '0' then
                 	con_leche <= '0';
                 else 
                 	con_leche <= '1';
                 end if;
-                --Implementacion para añadir leche
+                --Implementacion para aÃ±adir azucar
             	if S_AZUCAR = '0' then
                 	con_azucar <= '0';
                 else 
@@ -137,28 +78,28 @@ begin
                 --Implementacion cambios de estado      
                 if B_CORTO = '1' then
  --               	flag_corto <= '1';
-                    contador <= 10000;
+                    contador <= 10000;	--10 segundos
                     next_state <= S2;
                 elsif B_LARGO = '1' then
  --               	flag_largo <= '1';
-                    contador <= 20000;
+                    contador <= 20000;	--20 segundos
                     next_state <= S3;
                 end if;
                 
             elsif (current_state=S2 or current_state=S3 ) then
                if (CLK'event and CLK = '1') then
-                    contador <= contador -1;            
+                    contador <= contador -1;          	--contar hacia atras  
                     if contador<0 then
-                	   next_state <= S1;
+                	   next_state <= S1;		--vuelve al estado de reposo
                     end if;
                 end if;
             else
-                next_state <= S0;	--vuelta al estado de reposo
+                next_state <= S0;			--apagar la maquina
         end if;
         
         -- Apagar la maquina
         if (S_ON = '0') then
-        	next_state <= S0;
+        	next_state <= S0;			--si se apaga el interruptor se apaga el equipo
         end if;
         
     end process;
@@ -167,7 +108,7 @@ begin
     
     
     --//-------GESTION DE LAS SALIDA ASOCIADAS AL ESTADO-----------------
-    salidas_process: process (current_state)
+    salidas_process: process (current_state)		
     begin
         LIGHT <= (OTHERS => '0');
         
@@ -183,7 +124,7 @@ begin
             	LIGHT(2) <= '1';
             end if;
             
-            --Implementacion del caso con leche o sin leche
+            --Implementacion del caso con azucar o sin azucar
         	if con_azucar = '1' then
             	LIGHT(3) <= '1';
             end if;
@@ -196,7 +137,7 @@ begin
             	LIGHT(2) <= '1';
             end if;
             
-            --Implementacion del caso con leche o sin leche
+            --Implementacion del caso con azucar o sin azucar
         	if con_azucar = '1' then
             	LIGHT(3) <= '1';
             end if;    
@@ -209,7 +150,7 @@ begin
     display_process: process (contador)
     begin
     
-        case (contador/1000 mod 10) is
+        case (contador/1000 mod 10) is --unidades de segundos
         when 0 => 
             segment_u <= "0000001";
         when 1 => 
@@ -234,7 +175,7 @@ begin
             segment_u <= "1111110";
         end case;
         
-        case (contador/10000) is
+        case (contador/10000) is	--decimales de sgundos
         when 0 => 
             segment_d <= "0000001";
         when 1 => 
